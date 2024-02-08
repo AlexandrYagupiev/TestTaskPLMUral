@@ -18,7 +18,7 @@ namespace WinFormsAppPLMUral
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=A:\Проект\WinFormsApp1\WinFormsAppPLMUral\WinFormsAppPLMUral\LocalDB\LocalDBWinFormsAppPLMUral.mdf;Integrated Security=True");
+            optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\LocalDB\LocalDBWinFormsAppPLMUral.mdf;Integrated Security=True");
         }
     }
 }

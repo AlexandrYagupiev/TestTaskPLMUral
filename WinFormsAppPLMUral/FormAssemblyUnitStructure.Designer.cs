@@ -35,6 +35,9 @@ namespace WinFormsAppPLMUral
             buttonAdd = new Button();
             buttonChange = new Button();
             buttonDelete = new Button();
+            label1 = new Label();
+            comboBoxSortName = new ComboBox();
+            checkBoxFilterActivity = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAssemblyUnits).BeginInit();
             SuspendLayout();
             // 
@@ -97,11 +100,43 @@ namespace WinFormsAppPLMUral
             buttonDelete.UseVisualStyleBackColor = true;
             buttonDelete.Click += buttonDelete_Click;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(467, 478);
+            label1.Name = "label1";
+            label1.Size = new Size(178, 15);
+            label1.TabIndex = 6;
+            label1.Text = "Сортировка по наименованию";
+            // 
+            // comboBoxSortName
+            // 
+            comboBoxSortName.FormattingEnabled = true;
+            comboBoxSortName.Location = new Point(651, 474);
+            comboBoxSortName.Name = "comboBoxSortName";
+            comboBoxSortName.Size = new Size(121, 23);
+            comboBoxSortName.TabIndex = 7;
+            comboBoxSortName.SelectedIndexChanged += comboBoxSortName_SelectedIndexChanged;
+            // 
+            // checkBoxFilterActivity
+            // 
+            checkBoxFilterActivity.AutoSize = true;
+            checkBoxFilterActivity.Location = new Point(633, 503);
+            checkBoxFilterActivity.Name = "checkBoxFilterActivity";
+            checkBoxFilterActivity.Size = new Size(139, 19);
+            checkBoxFilterActivity.TabIndex = 8;
+            checkBoxFilterActivity.Text = "Активность фильтра";
+            checkBoxFilterActivity.UseVisualStyleBackColor = true;
+            checkBoxFilterActivity.CheckedChanged += checkBoxFilterActivity_CheckedChanged;
+            // 
             // FormAssemblyUnitStructure
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(784, 561);
+            Controls.Add(checkBoxFilterActivity);
+            Controls.Add(comboBoxSortName);
+            Controls.Add(label1);
             Controls.Add(buttonDelete);
             Controls.Add(buttonChange);
             Controls.Add(buttonAdd);
@@ -114,6 +149,7 @@ namespace WinFormsAppPLMUral
             Load += FormAssemblyUnitStructure_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewAssemblyUnits).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
         #endregion
 
@@ -123,5 +159,8 @@ namespace WinFormsAppPLMUral
         private Button buttonAdd;
         private Button buttonChange;
         private Button buttonDelete;
+        private Label label1;
+        private ComboBox comboBoxSortName;
+        private CheckBox checkBoxFilterActivity;
     }
 }
