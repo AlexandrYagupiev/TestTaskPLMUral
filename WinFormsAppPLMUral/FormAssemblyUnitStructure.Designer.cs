@@ -29,26 +29,14 @@ namespace WinFormsAppPLMUral
         /// </summary>
         private void InitializeComponent()
         {
-            dataGridViewAssemblyUnits = new DataGridView();
             buttonUploadToExcel = new Button();
             buttonLoadingFromExcel = new Button();
             buttonAdd = new Button();
             buttonChange = new Button();
             buttonDelete = new Button();
-            label1 = new Label();
-            comboBoxSortName = new ComboBox();
-            checkBoxFilterActivity = new CheckBox();
-            ((System.ComponentModel.ISupportInitialize)dataGridViewAssemblyUnits).BeginInit();
+            treeViewAssemblyUnits = new TreeView();
+            listViewAssemblyUnits = new ListView();
             SuspendLayout();
-            // 
-            // dataGridViewAssemblyUnits
-            // 
-            dataGridViewAssemblyUnits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewAssemblyUnits.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewAssemblyUnits.Location = new Point(12, 12);
-            dataGridViewAssemblyUnits.Name = "dataGridViewAssemblyUnits";
-            dataGridViewAssemblyUnits.Size = new Size(760, 456);
-            dataGridViewAssemblyUnits.TabIndex = 0;
             // 
             // buttonUploadToExcel
             // 
@@ -72,7 +60,7 @@ namespace WinFormsAppPLMUral
             // 
             // buttonAdd
             // 
-            buttonAdd.Location = new Point(12, 474);
+            buttonAdd.Location = new Point(258, 474);
             buttonAdd.Name = "buttonAdd";
             buttonAdd.Size = new Size(117, 23);
             buttonAdd.TabIndex = 3;
@@ -82,7 +70,7 @@ namespace WinFormsAppPLMUral
             // 
             // buttonChange
             // 
-            buttonChange.Location = new Point(135, 474);
+            buttonChange.Location = new Point(392, 503);
             buttonChange.Name = "buttonChange";
             buttonChange.Size = new Size(117, 23);
             buttonChange.TabIndex = 4;
@@ -92,7 +80,7 @@ namespace WinFormsAppPLMUral
             // 
             // buttonDelete
             // 
-            buttonDelete.Location = new Point(258, 474);
+            buttonDelete.Location = new Point(392, 474);
             buttonDelete.Name = "buttonDelete";
             buttonDelete.Size = new Size(117, 23);
             buttonDelete.TabIndex = 5;
@@ -100,67 +88,48 @@ namespace WinFormsAppPLMUral
             buttonDelete.UseVisualStyleBackColor = true;
             buttonDelete.Click += buttonDelete_Click;
             // 
-            // label1
+            // treeViewAssemblyUnits
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(467, 478);
-            label1.Name = "label1";
-            label1.Size = new Size(178, 15);
-            label1.TabIndex = 6;
-            label1.Text = "Сортировка по наименованию";
+            treeViewAssemblyUnits.Location = new Point(12, 12);
+            treeViewAssemblyUnits.Name = "treeViewAssemblyUnits";
+            treeViewAssemblyUnits.Size = new Size(240, 456);
+            treeViewAssemblyUnits.TabIndex = 9;
             // 
-            // comboBoxSortName
+            // listViewAssemblyUnits
             // 
-            comboBoxSortName.FormattingEnabled = true;
-            comboBoxSortName.Location = new Point(651, 474);
-            comboBoxSortName.Name = "comboBoxSortName";
-            comboBoxSortName.Size = new Size(121, 23);
-            comboBoxSortName.TabIndex = 7;
-            comboBoxSortName.SelectedIndexChanged += comboBoxSortName_SelectedIndexChanged;
-            // 
-            // checkBoxFilterActivity
-            // 
-            checkBoxFilterActivity.AutoSize = true;
-            checkBoxFilterActivity.Location = new Point(633, 503);
-            checkBoxFilterActivity.Name = "checkBoxFilterActivity";
-            checkBoxFilterActivity.Size = new Size(139, 19);
-            checkBoxFilterActivity.TabIndex = 8;
-            checkBoxFilterActivity.Text = "Активность фильтра";
-            checkBoxFilterActivity.UseVisualStyleBackColor = true;
-            checkBoxFilterActivity.CheckedChanged += checkBoxFilterActivity_CheckedChanged;
+            listViewAssemblyUnits.Location = new Point(258, 12);
+            listViewAssemblyUnits.Name = "listViewAssemblyUnits";
+            listViewAssemblyUnits.Size = new Size(251, 456);
+            listViewAssemblyUnits.TabIndex = 10;
+            listViewAssemblyUnits.UseCompatibleStateImageBehavior = false;
             // 
             // FormAssemblyUnitStructure
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(784, 561);
-            Controls.Add(checkBoxFilterActivity);
-            Controls.Add(comboBoxSortName);
-            Controls.Add(label1);
+            Controls.Add(listViewAssemblyUnits);
+            Controls.Add(treeViewAssemblyUnits);
             Controls.Add(buttonDelete);
             Controls.Add(buttonChange);
             Controls.Add(buttonAdd);
             Controls.Add(buttonLoadingFromExcel);
             Controls.Add(buttonUploadToExcel);
-            Controls.Add(dataGridViewAssemblyUnits);
             Name = "FormAssemblyUnitStructure";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Структура сборочной единицы";
+            FormClosing += FormAssemblyUnitStructure_FormClosing;
             Load += FormAssemblyUnitStructure_Load;
-            ((System.ComponentModel.ISupportInitialize)dataGridViewAssemblyUnits).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
-        #endregion
 
-        private DataGridView dataGridViewAssemblyUnits;
+        #endregion
         private Button buttonUploadToExcel;
         private Button buttonLoadingFromExcel;
         private Button buttonAdd;
         private Button buttonChange;
         private Button buttonDelete;
-        private Label label1;
-        private ComboBox comboBoxSortName;
-        private CheckBox checkBoxFilterActivity;
+        private TreeView treeViewAssemblyUnits;
+        private ListView listViewAssemblyUnits;
     }
 }

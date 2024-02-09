@@ -10,7 +10,8 @@ namespace WinFormsAppPLMUral
 {
     internal class ApplicationContext : DbContext
     {
-        public DbSet<AssemblyUnits> assemblyUnits { get; set; }
+        public DbSet<AssemblyUnit> AssemblyUnits { get; set; }
+        public DbSet<RelationAseemblyToAssembly> Relations { get; set; }
         public ApplicationContext()
         {
             Database.EnsureCreated();
@@ -18,7 +19,7 @@ namespace WinFormsAppPLMUral
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\LocalDB\LocalDBWinFormsAppPLMUral.mdf;Integrated Security=True");
+            optionsBuilder.UseSqlite(@"Data Source=file:WinFormsAppPLMUralDB.db");
         }
     }
 }

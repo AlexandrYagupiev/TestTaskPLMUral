@@ -21,17 +21,17 @@ namespace WinFormsAppPLMUral
                 Excel.Application exApp = new Excel.Application();
                 exApp.Workbooks.Add();
                 Excel.Worksheet wsh = (Excel.Worksheet)exApp.ActiveSheet;
-                if(dataGridViewAssemblyUnits.RowCount>1)
+                if (dataGridViewAssemblyUnits.RowCount > 1)
                 {
-                for (int i = 0; i < dataGridViewAssemblyUnits.RowCount - 1; i++)
-                {
-                    for (int j = 0; j < dataGridViewAssemblyUnits.ColumnCount; j++)
+                    for (int i = 0; i < dataGridViewAssemblyUnits.RowCount - 1; i++)
                     {
-                        wsh.Cells[i + 1, j + 1] = dataGridViewAssemblyUnits[j, i].Value.ToString();
+                        for (int j = 0; j < dataGridViewAssemblyUnits.ColumnCount; j++)
+                        {
+                            wsh.Cells[i + 1, j + 1] = dataGridViewAssemblyUnits[j, i].Value.ToString();
+                        }
                     }
                 }
-                }
-                else if(dataGridViewAssemblyUnits.RowCount==1) 
+                else if (dataGridViewAssemblyUnits.RowCount == 1)
                 {
                     for (int i = 0; i < dataGridViewAssemblyUnits.RowCount; i++)
                     {
@@ -41,7 +41,7 @@ namespace WinFormsAppPLMUral
                         }
                     }
                 }
-                
+
                 exApp.Visible = true;
             }
             catch (Exception ex)
@@ -50,12 +50,11 @@ namespace WinFormsAppPLMUral
             }
         }
 
-        public void UploadFromExcel(DataGridView dataGridViewAssemblyUnits , ApplicationContext applicationContext)
+        public void UploadFromExcel(ApplicationContext applicationContext)
         {
             try
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
-                AssemblyUnits assemblyUnits = new AssemblyUnits();
                 openFileDialog.Filter = "xlsx files (*.xlsx)|*.xlsx";
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -66,36 +65,26 @@ namespace WinFormsAppPLMUral
                     var dataTable = resultExcel.Tables[0];
                     for (int i = 0; i < dataTable.Rows.Count; i++)
                     {
-                        for (int j = 0; j < dataTable.Columns.Count; j++)
+                        AssemblyUnit assemblyUnits = new AssemblyUnit();
+                        var nameOfDetail = applicationContext.AssemblyUnits
+                        .Where(c => c.Name == dataTable.Rows[i][dataTable.Columns[1]].ToString())
+                        .FirstOrDefault();
+                        if (nameOfDetail != null)
                         {
-                            var nameOfDetail = applicationContext.assemblyUnits
-                            .Where(c => c.Name == dataTable.Rows[i][dataTable.Columns[1]].ToString())
-                            .FirstOrDefault();
-                            if (nameOfDetail != null)
-                            {
-                                if (j == 2)
-                                {
-                                    nameOfDetail.Quantity += Convert.ToInt32(dataTable.Rows[i][dataTable.Columns[j]]);
-                                    applicationContext.SaveChanges();
-                                }
-                            }
-                            else if (nameOfDetail == null)
-                            {
-                                if (j == 1)
-                                {
-                                    assemblyUnits.Name = dataTable.Rows[i][dataTable.Columns[j]].ToString();
-                                }
-                                if (j == 2)
-                                {
-                                    assemblyUnits.Quantity = Convert.ToInt32(dataTable.Rows[i][dataTable.Columns[j]]);
-                                    applicationContext.assemblyUnits.Add(assemblyUnits);
-                                    applicationContext.SaveChanges();
-                                }
-                            }
-                            dataGridViewAssemblyUnits.Refresh();
+                            //nameOfDetail.Quantity += Convert.ToInt32(dataTable.Rows[i][dataTable.Columns[2]]);
+                            applicationContext.SaveChanges();
+
+                        }
+                        else if (nameOfDetail == null)
+                        {
+                            assemblyUnits.Name = dataTable.Rows[i][dataTable.Columns[1]].ToString();
+                            //assemblyUnits.Quantity = Convert.ToInt32(dataTable.Rows[i][dataTable.Columns[2]]);
+                            applicationContext.AssemblyUnits.Add(assemblyUnits);
+                            applicationContext.SaveChanges();
                         }
                     }
                 }
+
             }
             catch (Exception ex)
             {
