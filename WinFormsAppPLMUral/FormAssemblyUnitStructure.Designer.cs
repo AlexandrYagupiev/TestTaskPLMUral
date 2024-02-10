@@ -29,8 +29,8 @@ namespace WinFormsAppPLMUral
         /// </summary>
         private void InitializeComponent()
         {
-            buttonUploadToExcel = new Button();
-            buttonLoadingFromExcel = new Button();
+            buttonExportToExcel = new Button();
+            buttonImportFromExcel = new Button();
             buttonAdd = new Button();
             buttonChange = new Button();
             buttonDelete = new Button();
@@ -38,25 +38,25 @@ namespace WinFormsAppPLMUral
             listViewAssemblyUnits = new ListView();
             SuspendLayout();
             // 
-            // buttonUploadToExcel
+            // buttonExportToExcel
             // 
-            buttonUploadToExcel.Location = new Point(12, 526);
-            buttonUploadToExcel.Name = "buttonUploadToExcel";
-            buttonUploadToExcel.Size = new Size(117, 23);
-            buttonUploadToExcel.TabIndex = 1;
-            buttonUploadToExcel.Text = "Выгрузка в Excel";
-            buttonUploadToExcel.UseVisualStyleBackColor = true;
-            buttonUploadToExcel.Click += buttonUploadToExcel_Click;
+            buttonExportToExcel.Location = new Point(12, 526);
+            buttonExportToExcel.Name = "buttonExportToExcel";
+            buttonExportToExcel.Size = new Size(117, 23);
+            buttonExportToExcel.TabIndex = 1;
+            buttonExportToExcel.Text = " Экспорт в Excel";
+            buttonExportToExcel.UseVisualStyleBackColor = true;
+            buttonExportToExcel.Click += buttonUploadToExcel_Click;
             // 
-            // buttonLoadingFromExcel
+            // buttonImportFromExcel
             // 
-            buttonLoadingFromExcel.Location = new Point(135, 526);
-            buttonLoadingFromExcel.Name = "buttonLoadingFromExcel";
-            buttonLoadingFromExcel.Size = new Size(112, 23);
-            buttonLoadingFromExcel.TabIndex = 2;
-            buttonLoadingFromExcel.Text = "Загрузка из Excel";
-            buttonLoadingFromExcel.UseVisualStyleBackColor = true;
-            buttonLoadingFromExcel.Click += buttonLoadingFromExcel_Click;
+            buttonImportFromExcel.Location = new Point(135, 526);
+            buttonImportFromExcel.Name = "buttonImportFromExcel";
+            buttonImportFromExcel.Size = new Size(112, 23);
+            buttonImportFromExcel.TabIndex = 2;
+            buttonImportFromExcel.Text = "Импорт из Excel";
+            buttonImportFromExcel.UseVisualStyleBackColor = true;
+            buttonImportFromExcel.Click += buttonLoadingFromExcel_Click;
             // 
             // buttonAdd
             // 
@@ -113,8 +113,8 @@ namespace WinFormsAppPLMUral
             Controls.Add(buttonDelete);
             Controls.Add(buttonChange);
             Controls.Add(buttonAdd);
-            Controls.Add(buttonLoadingFromExcel);
-            Controls.Add(buttonUploadToExcel);
+            Controls.Add(buttonImportFromExcel);
+            Controls.Add(buttonExportToExcel);
             Name = "FormAssemblyUnitStructure";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Структура сборочной единицы";
@@ -124,8 +124,8 @@ namespace WinFormsAppPLMUral
         }
 
         #endregion
-        private Button buttonUploadToExcel;
-        private Button buttonLoadingFromExcel;
+        private Button buttonExportToExcel;
+        private Button buttonImportFromExcel;
         private Button buttonAdd;
         private Button buttonChange;
         private Button buttonDelete;

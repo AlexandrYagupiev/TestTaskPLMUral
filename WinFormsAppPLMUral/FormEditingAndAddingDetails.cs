@@ -24,7 +24,7 @@ namespace WinFormsAppPLMUral
             this.assemblyUnits = assemblyUnits;
         }
 
-        private void SetComboBox(List<AssemblyUnit> assemblyUnits, int index,int defaultId)
+        private void SetComboBox(List<AssemblyUnit> assemblyUnits, int index, int defaultId)
         {
             if (assemblyUnits.Count > 0)
             {
@@ -52,9 +52,10 @@ namespace WinFormsAppPLMUral
                 {
                     var rowNumber = dataGridViewDetailsSelector.Rows.Add();
                     var row = dataGridViewDetailsSelector.Rows[rowNumber];
+                    row.Tag = detail.Id;
                     var textBox = (DataGridViewTextBoxCell)row.Cells[1];
                     textBox.Value = detail.Count;
-                    SetComboBox(assemblyUnits, rowNumber,detail.Id);
+                    SetComboBox(assemblyUnits, rowNumber, detail.DetailId);
                 }
             }
             //var rowNumber = dataGridViewDetailsSelector.Rows.Add();
@@ -87,26 +88,40 @@ namespace WinFormsAppPLMUral
         private void buttonAdd_Click(object sender, EventArgs e)
         {
             var rowNumber = dataGridViewDetailsSelector.Rows.Add();
-            SetComboBox(assemblyUnits, rowNumber,0);
+            SetComboBox(assemblyUnits, rowNumber, 1);
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
             assemblyUnit.Name = textBoxName.Text;
             assemblyUnit.Details = new();
-            for (int i=0;i< dataGridViewDetailsSelector.RowCount;i++)
+            for (int i = 0; i < dataGridViewDetailsSelector.RowCount; i++)
             {
                 var comboBox = (DataGridViewComboBoxCell)dataGridViewDetailsSelector.Rows[i].Cells[0];
                 var textBox = (DataGridViewTextBoxCell)dataGridViewDetailsSelector.Rows[i].Cells[1];
+                var id = 0;
+                if(dataGridViewDetailsSelector.Rows[i].Tag != null)
+                {
+                    id = (int)dataGridViewDetailsSelector.Rows[i].Tag;
+                }
                 assemblyUnit.Details.Add(new RelationAseemblyToAssembly()
                 {
                     Count = int.Parse(textBox.Value.ToString()),
-                    Detail = new AssemblyUnit()
-                    {
-                        Id= (int)comboBox.Value
-                    }
+                    DetailId = (int)comboBox.Value,                  
+                    Id = id
                 }
                 );
+            }
+        }
+
+        private void dataGridViewDetailsSelector_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                if (dataGridViewDetailsSelector.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell != null)
+                {
+                    dataGridViewDetailsSelector.Rows.Remove(dataGridViewDetailsSelector.Rows[e.RowIndex]);
+                }
             }
         }
     }

@@ -5,7 +5,6 @@ using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using ExcelDataReader;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Office.Interop.Excel;
@@ -27,6 +26,7 @@ namespace WinFormsAppPLMUral
 
         public void Show()
         {
+            treeViewAssemblyUnits.Nodes.Clear();
             listViewAssemblyUnits.Items.Clear();
             var units = mainViewModel.GetAllAssemblyUnits();
             foreach (var unit in units)
@@ -35,7 +35,27 @@ namespace WinFormsAppPLMUral
                 {
                     Tag = unit.Id
                 });
-                //listViewAssemblyUnits.Items.Add($"{unit.Id} {unit.Name}");
+            }
+
+            foreach (var unit in units)
+            {
+                var stack = new Stack<(AssemblyUnit unit, TreeNode node)>();
+                var rootNode = new TreeNode(unit.Name);
+                treeViewAssemblyUnits.Nodes.Add(rootNode);
+                stack.Push((unit, rootNode));
+                while (stack.Count > 0)
+                {
+                    var item = stack.Pop();
+                    if (item.unit.Details != null)
+                    {
+                        foreach (var detail in item.unit.Details)
+                        {
+                            var childNode = new TreeNode(units.FirstOrDefault(t => t.Id == detail.DetailId).Name);
+                            stack.Push((units.FirstOrDefault(t => t.Id == detail.DetailId), childNode));
+                            item.node.Nodes.Add(childNode);
+                        }
+                    }
+                }
             }
         }
 
@@ -49,32 +69,79 @@ namespace WinFormsAppPLMUral
 
         private void buttonUploadToExcel_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                using (var saveFileDialog = new SaveFileDialog())
+                {
+                    saveFileDialog.Filter = "xlsx files (*.xlsx)|*.xlsx";
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        mainViewModel.Export(saveFileDialog.FileName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void buttonLoadingFromExcel_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                using (var openFileDialog = new OpenFileDialog())
+                {
+                    openFileDialog.Filter = "xlsx files (*.xlsx)|*.xlsx";
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        mainViewModel.Import(openFileDialog.FileName);
+                        Show();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void buttonDelete_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                if (listViewAssemblyUnits.SelectedItems.Count > 0)
+                {
+                    mainViewModel.DeleteAssembly((int)listViewAssemblyUnits.SelectedItems[0].Tag);
+                    Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void buttonChange_Click(object sender, EventArgs e)
         {
-            if (listViewAssemblyUnits.SelectedItems.Count>0)
+            try
             {
-                var assemblyUnit = mainViewModel.GetAssemblyUnitById((int)listViewAssemblyUnits.SelectedItems[0].Tag);
-                using (FormEditingAndAddingDetails form = new FormEditingAndAddingDetails(assemblyUnit, mainViewModel.GetAllAssemblyUnits()))
+                if (listViewAssemblyUnits.SelectedItems.Count > 0)
                 {
-                    if (form.ShowDialog() == DialogResult.OK)
+                    var assemblyUnit = mainViewModel.GetAssemblyUnitById((int)listViewAssemblyUnits.SelectedItems[0].Tag);
+                    using (FormEditingAndAddingDetails form = new FormEditingAndAddingDetails(assemblyUnit, mainViewModel.GetAllAssemblyUnits()))
                     {
-                        this.mainViewModel.UpdateAssembly(assemblyUnit);
-                        Show();
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            this.mainViewModel.UpdateAssembly(assemblyUnit);
+                            Show();
+                        }
                     }
                 }
+            }
+            catch (Exception ex) 
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -97,7 +164,7 @@ namespace WinFormsAppPLMUral
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Ошибка");
+                MessageBox.Show(ex.Message, "Ошибка");
             }
 
         }

@@ -14,7 +14,7 @@ namespace WinFormsAppPLMUral.Models
 
         public override string ToString()
         {
-            return $"{Id} {Name}";
+            return $"{nameof(Id)}:{Id} {nameof(Name)}:{Name}";
         }
     }
 }

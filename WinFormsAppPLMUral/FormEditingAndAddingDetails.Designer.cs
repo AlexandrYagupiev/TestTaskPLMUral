@@ -88,6 +88,7 @@
             dataGridViewDetailsSelector.Name = "dataGridViewDetailsSelector";
             dataGridViewDetailsSelector.Size = new Size(397, 150);
             dataGridViewDetailsSelector.TabIndex = 6;
+            dataGridViewDetailsSelector.CellClick += dataGridViewDetailsSelector_CellClick;
             dataGridViewDetailsSelector.DataError += dataGridViewDetailsSelector_DataError;
             dataGridViewDetailsSelector.RowsAdded += dataGridViewDetailsSelector_RowsAdded;
             dataGridViewDetailsSelector.RowsRemoved += dataGridViewDetailsSelector_RowsRemoved;

@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinFormsAppPLMUral.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Office.Interop.Excel;
+using Excel = Microsoft.Office.Interop.Excel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace WinFormsAppPLMUral
 {
@@ -17,22 +18,27 @@ namespace WinFormsAppPLMUral
         {
             using (var applicationContext = new ApplicationContext())
             {
-                return applicationContext.AssemblyUnits.ToList();
+                return applicationContext.AssemblyUnits.Include(t => t.Details).ToList();
             }
         }
 
-        public void CreateAssembly(string name, List<RelationAseemblyToAssembly> relations)
+        public int CreateAssembly(string name, List<RelationAseemblyToAssembly> children)
         {
             using (var applicationContext = new ApplicationContext())
             {
-                if (relations != null)
+                if (children != null)
                 {
-                    foreach (var relation in relations)
+                    foreach (var child in children)
                     {
-                        if (applicationContext.AssemblyUnits.FirstOrDefault(t => t.Id == relation.Detail.Id) == null)
+                        if (applicationContext.AssemblyUnits.FirstOrDefault(t => t.Id == child.DetailId) == null)
                         {
-                            throw new Exception($"{relation.Detail.Id} нет в базе");
+                            throw new Exception($"{child.Id} нет в базе");
                         }
+                        if(children.Where(t=>t.Id==child.Id).Count()>1)
+                        {
+                            throw new Exception($"Деталь с id:{child.Id} продублированна в составе исходной детали");
+                        }
+
                     }
                 }
                 if (name == null)
@@ -41,12 +47,13 @@ namespace WinFormsAppPLMUral
                 }
                 var assemblyUnit = new AssemblyUnit();
                 assemblyUnit.Name = name;
-                if (relations != null)
+                if (children != null)
                 {
-                    assemblyUnit.Details = relations;
+                    assemblyUnit.Details = children;
                 }
                 applicationContext.AssemblyUnits.Add(assemblyUnit);
                 applicationContext.SaveChanges();
+                return assemblyUnit.Id;
             }
 
         }
@@ -58,7 +65,7 @@ namespace WinFormsAppPLMUral
                 var assemblyUnit = applicationContext.AssemblyUnits.Include(t => t.Details).SingleOrDefault(t => t.Id == id);
                 if (assemblyUnit == null)
                 {
-                    throw new Exception($"Деталь с таким {id} отсутсвует");
+                    throw new Exception($"Деталь с таким id:{id} отсутсвует");
                 }
                 return assemblyUnit;
             }
@@ -68,18 +75,22 @@ namespace WinFormsAppPLMUral
         {
             using (var applicationContext = new ApplicationContext())
             {
-                var assemblyUnitFromDb = applicationContext.AssemblyUnits.FirstOrDefault(t => t.Id == assemblyUnit.Id);
+                var assemblyUnitFromDb = applicationContext.AssemblyUnits.Include(t => t.Details).FirstOrDefault(t => t.Id == assemblyUnit.Id);
                 if (assemblyUnitFromDb == null)
                 {
                     throw new Exception($"В базе данных нет записи с id:{assemblyUnitFromDb.Id}");
                 }
                 if (assemblyUnit.Details != null)
                 {
-                    foreach (var relation in assemblyUnit.Details)
+                    foreach (var detail in assemblyUnit.Details)
                     {
-                        if (applicationContext.AssemblyUnits.FirstOrDefault(t => t.Id == relation.Detail.Id) == null)
+                        if (applicationContext.AssemblyUnits.FirstOrDefault(t => t.Id == detail.DetailId) == null)
                         {
-                            throw new Exception($"{relation.Detail.Id} нет в базе");
+                            throw new Exception($"{detail.DetailId} нет в базе");
+                        }
+                        if (assemblyUnit.Details.Where(t => t.Id == detail.DetailId).Count() > 1)
+                        {
+                            throw new Exception($"Деталь с id:{detail.Id} продублированна в составе исходной детали");
                         }
                     }
                 }
@@ -88,12 +99,12 @@ namespace WinFormsAppPLMUral
                 while (stack.Count > 0)
                 {
                     var item = stack.Pop();
-                    foreach (var relation in item.Details)
+                    foreach (var detail in item.Details)
                     {
-                        var detailFromDb = applicationContext.AssemblyUnits.Include(t => t.Details).FirstOrDefault(t => t.Id == relation.Detail.Id);
+                        var detailFromDb = applicationContext.AssemblyUnits.Include(t => t.Details).FirstOrDefault(t => t.Id == detail.DetailId);
                         if (detailFromDb == null)
                         {
-                            throw new Exception($"{relation.Id} нет в базе");
+                            throw new Exception($"{detail.DetailId} нет в базе");
                         }
                         stack.Push(detailFromDb);
                     }
@@ -107,23 +118,148 @@ namespace WinFormsAppPLMUral
                     }
 
                 }
-            }
-            using (var applicationContext = new ApplicationContext())
-            {
+                //foreach (var detail in assemblyUnit.Details)
+                //{
+                //    var detailFromDb = applicationContext.AssemblyUnits.FirstOrDefault(t => t.Id == detail.AssemblyUnit.Id);
+                //    detail.AssemblyUnit = detailFromDb;
+                //}
+                var detailsToDelete = new List<RelationAseemblyToAssembly>();
+                foreach (var detail in assemblyUnitFromDb.Details)
+                {
+                    var updateDetail = assemblyUnit.Details.FirstOrDefault(d => d.Id == detail.Id);
+                    if (updateDetail == null)
+                    {
+                        detailsToDelete.Add(detail);
+                    }
+                    else
+                    {
+                        detail.Count = updateDetail.Count;
+                    }
+                }
+                foreach (var detailToDelete in detailsToDelete)
+                {
+                    assemblyUnitFromDb.Details.Remove(detailToDelete);
+                }
                 foreach (var detail in assemblyUnit.Details)
                 {
-                    applicationContext.Relations.Add(detail);
-                    applicationContext.SaveChanges();
+                    if (detail.Id==0)
+                    {                       
+                        detail.AssemblyUnitId = assemblyUnit.Id;
+                        assemblyUnitFromDb.Details.Add(detail);
+                    }
                 }
-                assemblyUnit.Details = applicationContext.Relations.Where(t => t.Detail.Id == assemblyUnit.Id).ToList();
-                applicationContext.AssemblyUnits.Update(assemblyUnit);
                 applicationContext.SaveChanges();
             }
         }
 
-        public void DeleteAssembly()
+        public void DeleteAssembly(int id)
         {
+            using (var applicationContext = new ApplicationContext())
+            {
+                var assemblyUnitFromDb = applicationContext.AssemblyUnits.FirstOrDefault(t => t.Id == id);
+                if (assemblyUnitFromDb == null)
+                {
+                    throw new Exception($"В базе данных нет записи с id:{assemblyUnitFromDb.Id}");
+                }
+                foreach (var assemblyUnit in applicationContext.AssemblyUnits.Include(t => t.Details))
+                {
+                    foreach (var detail in assemblyUnit.Details)
+                    {
+                        if (detail.DetailId == id)
+                        {
+                            throw new Exception($"Деталь с id:{id} вложена в другу деталь c id:{assemblyUnit.Id}");
+                        }
+                    }
+                }
+                applicationContext.Relations.RemoveRange(assemblyUnitFromDb.Details);
+                applicationContext.AssemblyUnits.Remove(assemblyUnitFromDb);
+                applicationContext.SaveChanges();
+            }
 
+        }
+
+        public void Export(string path)
+        {
+            using (var applicationContext = new ApplicationContext())
+            { 
+                var excelApp = new Excel.Application();
+                var workBook = excelApp.Workbooks.Add();
+                try
+                {
+                   
+                    var wsh = (Excel.Worksheet)workBook.ActiveSheet;
+                    var rowNumber = 1;
+                    foreach (var assemblyUnit in applicationContext.AssemblyUnits)
+                    {
+                        wsh.Cells[rowNumber, 1] = assemblyUnit.Id.ToString();
+                        wsh.Cells[rowNumber, 2] = assemblyUnit.Name;
+                        rowNumber++;
+                    }
+                    var wsh2 = workBook.Sheets.Add();
+                    //var wsh2 = (Excel.Worksheet)workBook.ActiveSheet;
+                    rowNumber = 1;
+                    foreach (var relation in applicationContext.Relations)
+                    {
+                        wsh2.Cells[rowNumber, 1] = relation.AssemblyUnitId;
+                        wsh2.Cells[rowNumber, 2] = relation.Count;
+                        wsh2.Cells[rowNumber, 3] = relation.Id;
+                        wsh2.Cells[rowNumber, 4] = relation.DetailId;
+                        rowNumber++;
+                    }
+                    var pathSplit =Path.GetDirectoryName(path)+"\\"+Path.GetFileNameWithoutExtension(path);                 
+                    workBook.SaveAs(pathSplit, Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookDefault, AccessMode: Excel.XlSaveAsAccessMode.xlExclusive);
+                }
+                finally 
+                {
+                    workBook.Close();
+                    excelApp.Quit();
+                }
+            }
+        }
+        public string GetCellValue(Excel.Worksheet worksheet, int i, int j)
+        {
+            return ((object)((Excel.Range)worksheet.Cells[i, j]).Value).ToString();
+        }
+
+        public void Import(string path)
+        {
+            using (var applicationContext = new ApplicationContext())
+            {
+                applicationContext.AssemblyUnits.RemoveRange(applicationContext.AssemblyUnits);
+                applicationContext.Relations.RemoveRange(applicationContext.Relations);
+                applicationContext.SaveChanges();
+                var excelApp = new Excel.Application();
+                var workbook = excelApp.Workbooks.Open(path);
+                try
+                {                  
+                    var wsh = (Excel.Worksheet)workbook.Sheets[2];
+                    for (int i = 1; i < wsh.UsedRange.Rows.Count + 1; i++)
+                    {
+                        var assemblyUnit = new AssemblyUnit();
+                        assemblyUnit.Id = int.Parse(GetCellValue(wsh, i, 1));
+                        assemblyUnit.Name = GetCellValue(wsh, i, 2);
+                        applicationContext.AssemblyUnits.Add(assemblyUnit);
+                        applicationContext.SaveChanges();
+                    }
+                    var wsh2 = (Excel.Worksheet)workbook.Sheets[1];
+                    for (int i = 1; i < wsh2.UsedRange.Rows.Count + 1; i++)
+                    {
+                        var relationAseemblyToAssembly = new RelationAseemblyToAssembly();
+                        relationAseemblyToAssembly.AssemblyUnitId = int.Parse(GetCellValue(wsh2, i, 1));
+                        relationAseemblyToAssembly.Count = int.Parse(GetCellValue(wsh2, i, 2));
+                        relationAseemblyToAssembly.Id = int.Parse(GetCellValue(wsh2, i, 3));
+                        relationAseemblyToAssembly.DetailId = int.Parse(GetCellValue(wsh2, i, 4));
+                        applicationContext.Relations.Add(relationAseemblyToAssembly);
+                        applicationContext.SaveChanges();
+                    }
+                }
+                finally
+                {
+                    workbook.Close();
+                    excelApp.Quit();
+                }
+
+            }
         }
     }
 }

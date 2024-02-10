@@ -10,14 +10,16 @@ namespace WinFormsAppPLMUral.Models
     public class RelationAseemblyToAssembly
     {
         public int Id { get; set; }
-
-        [ForeignKey("Id")]
-        public AssemblyUnit Detail { get; set; }
+        //public int AssemblyId { get; set; }
+        public int AssemblyUnitId { get; set; }
+        //public AssemblyUnit AssemblyUnit { get; set; }
+        public int DetailId { get; set; }
+        //public AssemblyUnit Detail {get; set; }
         public int Count { get; set; }
 
         public override string ToString()
         {
-            return ($"{Id} {Detail} {Count}");
+            return ($"{nameof(Id)}:{Id} {nameof(Count)}:{Count}");
         }
     }
 }
