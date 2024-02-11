@@ -11,7 +11,7 @@ namespace TestProjectWinFormsAppPLMUral
         }
 
         [Test]
-        public void Test1()
+        public void TestCreateAssemblyAndUpdateAssembly()
         {
             using (var applicationContext = new WinFormsAppPLMUral.ApplicationContext(true))
             {
@@ -32,7 +32,7 @@ namespace TestProjectWinFormsAppPLMUral
         }
 
         [Test]
-        public void Test2()
+        public void TestExportAndImport()
         {
             using (var applicationContext = new WinFormsAppPLMUral.ApplicationContext(true))
             {

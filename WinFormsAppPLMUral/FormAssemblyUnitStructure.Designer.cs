@@ -36,6 +36,7 @@ namespace WinFormsAppPLMUral
             buttonDelete = new Button();
             treeViewAssemblyUnits = new TreeView();
             listViewAssemblyUnits = new ListView();
+            buttonSortByName = new Button();
             SuspendLayout();
             // 
             // buttonExportToExcel
@@ -103,11 +104,22 @@ namespace WinFormsAppPLMUral
             listViewAssemblyUnits.TabIndex = 10;
             listViewAssemblyUnits.UseCompatibleStateImageBehavior = false;
             // 
+            // buttonSortByName
+            // 
+            buttonSortByName.Location = new Point(258, 532);
+            buttonSortByName.Name = "buttonSortByName";
+            buttonSortByName.Size = new Size(251, 23);
+            buttonSortByName.TabIndex = 11;
+            buttonSortByName.Text = "Сортировка по наименованию";
+            buttonSortByName.UseVisualStyleBackColor = true;
+            buttonSortByName.Click += buttonSortByName_Click;
+            // 
             // FormAssemblyUnitStructure
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(784, 561);
+            Controls.Add(buttonSortByName);
             Controls.Add(listViewAssemblyUnits);
             Controls.Add(treeViewAssemblyUnits);
             Controls.Add(buttonDelete);
@@ -131,5 +143,6 @@ namespace WinFormsAppPLMUral
         private Button buttonDelete;
         private TreeView treeViewAssemblyUnits;
         private ListView listViewAssemblyUnits;
+        private Button buttonSortByName;
     }
 }

@@ -10,16 +10,13 @@ namespace WinFormsAppPLMUral.Models
     public class RelationAseemblyToAssembly
     {
         public int Id { get; set; }
-        //public int AssemblyId { get; set; }
         public int AssemblyUnitId { get; set; }
-        //public AssemblyUnit AssemblyUnit { get; set; }
         public int DetailId { get; set; }
-        //public AssemblyUnit Detail {get; set; }
         public int Count { get; set; }
 
         public override string ToString()
         {
-            return ($"{nameof(Id)}:{Id} {nameof(Count)}:{Count}");
+            return ($"{nameof(Id)}:{Id} {nameof(AssemblyUnitId)}:{AssemblyUnitId} {nameof(DetailId)}:{DetailId} {nameof(Count)}:{Count}");
         }
     }
 }

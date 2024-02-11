@@ -26,36 +26,43 @@ namespace WinFormsAppPLMUral
 
         public void Show()
         {
-            treeViewAssemblyUnits.Nodes.Clear();
-            listViewAssemblyUnits.Items.Clear();
-            var units = mainViewModel.GetAllAssemblyUnits();
-            foreach (var unit in units)
+            try
             {
-                listViewAssemblyUnits.Items.Add(new ListViewItem(unit.Name)
+                treeViewAssemblyUnits.Nodes.Clear();
+                listViewAssemblyUnits.Items.Clear();
+                var units = mainViewModel.GetAllAssemblyUnits();
+                foreach (var unit in units)
                 {
-                    Tag = unit.Id
-                });
-            }
-
-            foreach (var unit in units)
-            {
-                var stack = new Stack<(AssemblyUnit unit, TreeNode node)>();
-                var rootNode = new TreeNode(unit.Name);
-                treeViewAssemblyUnits.Nodes.Add(rootNode);
-                stack.Push((unit, rootNode));
-                while (stack.Count > 0)
-                {
-                    var item = stack.Pop();
-                    if (item.unit.Details != null)
+                    listViewAssemblyUnits.Items.Add(new ListViewItem(unit.Name)
                     {
-                        foreach (var detail in item.unit.Details)
+                        Tag = unit.Id
+                    });
+                }
+
+                foreach (var unit in units)
+                {
+                    var stack = new Stack<(AssemblyUnit unit, TreeNode node)>();
+                    var rootNode = new TreeNode(unit.Name);
+                    treeViewAssemblyUnits.Nodes.Add(rootNode);
+                    stack.Push((unit, rootNode));
+                    while (stack.Count > 0)
+                    {
+                        var item = stack.Pop();
+                        if (item.unit.Details != null)
                         {
-                            var childNode = new TreeNode(units.FirstOrDefault(t => t.Id == detail.DetailId).Name);
-                            stack.Push((units.FirstOrDefault(t => t.Id == detail.DetailId), childNode));
-                            item.node.Nodes.Add(childNode);
+                            foreach (var detail in item.unit.Details)
+                            {
+                                var childNode = new TreeNode(units.FirstOrDefault(t => t.Id == detail.DetailId).Name);
+                                stack.Push((units.FirstOrDefault(t => t.Id == detail.DetailId), childNode));
+                                item.node.Nodes.Add(childNode);
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -139,7 +146,7 @@ namespace WinFormsAppPLMUral
                     }
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -157,9 +164,6 @@ namespace WinFormsAppPLMUral
                         mainViewModel.CreateAssembly(assemblyUnit.Name, assemblyUnit.Details);
                         Show();
                     }
-
-                    //form.
-                    //mainViewModel.CreateAssembly();
                 }
             }
             catch (Exception ex)
@@ -182,6 +186,13 @@ namespace WinFormsAppPLMUral
         private void FormAssemblyUnitStructure_FormClosing(object sender, FormClosingEventArgs e)
         {
 
+        }
+
+        private void buttonSortByName_Click(object sender, EventArgs e)
+        {
+            var items = listViewAssemblyUnits.Items.Cast<ListViewItem>().OrderBy(x => x.Text).ToList();
+            listViewAssemblyUnits.Items.Clear();
+            listViewAssemblyUnits.Items.AddRange(items.ToArray());
         }
     }
 }

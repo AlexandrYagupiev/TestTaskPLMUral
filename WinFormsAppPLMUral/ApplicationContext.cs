@@ -40,12 +40,7 @@ namespace WinFormsAppPLMUral
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<AssemblyUnit>().HasMany<RelationAseemblyToAssembly>().WithOne().HasForeignKey(t=>t.AssemblyUnitId).HasForeignKey(t => t.DetailId);
-            //modelBuilder.Entity<AssemblyUnit>().HasMany<RelationAseemblyToAssembly>().WithOne().HasForeignKey(t => t.DetailId);
-            //modelBuilder.Entity<RelationAseemblyToAssembly>().Property(t => t.AssemblyUnit);
-            //modelBuilder.Entity<RelationAseemblyToAssembly>().Navigation(t => t.AssemblyUnit);
-            //modelBuilder.Entity<RelationAseemblyToAssembly>().Navigation(t => t.Detail);
             modelBuilder.Entity<AssemblyUnit>().Navigation(t => t.Details).UsePropertyAccessMode(propertyAccessMode:PropertyAccessMode.Property);
         }
     }

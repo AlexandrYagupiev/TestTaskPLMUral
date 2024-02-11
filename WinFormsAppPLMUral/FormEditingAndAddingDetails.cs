@@ -30,11 +30,6 @@ namespace WinFormsAppPLMUral
             {
                 var row = dataGridViewDetailsSelector.Rows[index];
                 var comboBox = (DataGridViewComboBoxCell)row.Cells[0];
-                //foreach (var item in assemblyUnits)
-                //{
-                //    comboBox.Items.Add(item.ToString());
-                //    comboBox.DataSource = "Test";
-                //}
                 comboBox.DataSource = assemblyUnits;
                 comboBox.ValueMember = "Id";
                 comboBox.DisplayMember = "Name";
@@ -58,17 +53,19 @@ namespace WinFormsAppPLMUral
                     SetComboBox(assemblyUnits, rowNumber, detail.DetailId);
                 }
             }
-            //var rowNumber = dataGridViewDetailsSelector.Rows.Add();
-            //var row = dataGridViewDetailsSelector.Rows[rowNumber];
-            //var comboBox = (DataGridViewComboBoxColumn)row.Cells[0].OwningColumn;
-            //var textBox = (DataGridViewTextBoxColumn)row.Cells[1].OwningColumn;
-
-            //row.Cells[0].Value = detail;
         }
 
         private void FormEditingAndAddingDetails_Shown(object sender, EventArgs e)
         {
-            Show();
+            try
+            { 
+                Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+           
         }
         private void dataGridViewDetailsSelector_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
@@ -87,41 +84,62 @@ namespace WinFormsAppPLMUral
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var rowNumber = dataGridViewDetailsSelector.Rows.Add();
-            SetComboBox(assemblyUnits, rowNumber, 1);
+            try
+            {
+                var rowNumber = dataGridViewDetailsSelector.Rows.Add();
+                SetComboBox(assemblyUnits, rowNumber, 1);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            assemblyUnit.Name = textBoxName.Text;
-            assemblyUnit.Details = new();
-            for (int i = 0; i < dataGridViewDetailsSelector.RowCount; i++)
+            try
             {
-                var comboBox = (DataGridViewComboBoxCell)dataGridViewDetailsSelector.Rows[i].Cells[0];
-                var textBox = (DataGridViewTextBoxCell)dataGridViewDetailsSelector.Rows[i].Cells[1];
-                var id = 0;
-                if(dataGridViewDetailsSelector.Rows[i].Tag != null)
+                assemblyUnit.Name = textBoxName.Text;
+                assemblyUnit.Details = new();
+                for (int i = 0; i < dataGridViewDetailsSelector.RowCount; i++)
                 {
-                    id = (int)dataGridViewDetailsSelector.Rows[i].Tag;
+                    var comboBox = (DataGridViewComboBoxCell)dataGridViewDetailsSelector.Rows[i].Cells[0];
+                    var textBox = (DataGridViewTextBoxCell)dataGridViewDetailsSelector.Rows[i].Cells[1];
+                    var id = 0;
+                    if (dataGridViewDetailsSelector.Rows[i].Tag != null)
+                    {
+                        id = (int)dataGridViewDetailsSelector.Rows[i].Tag;
+                    }
+                    assemblyUnit.Details.Add(new RelationAseemblyToAssembly()
+                    {
+                        Count = int.Parse(textBox.Value.ToString()),
+                        DetailId = (int)comboBox.Value,
+                        Id = id
+                    }
+                    );
                 }
-                assemblyUnit.Details.Add(new RelationAseemblyToAssembly()
-                {
-                    Count = int.Parse(textBox.Value.ToString()),
-                    DetailId = (int)comboBox.Value,                  
-                    Id = id
-                }
-                );
+            }
+            catch (Exception ex)
+            { 
+                MessageBox.Show(ex.Message);
             }
         }
 
         private void dataGridViewDetailsSelector_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            try
             {
-                if (dataGridViewDetailsSelector.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell != null)
+                if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
                 {
-                    dataGridViewDetailsSelector.Rows.Remove(dataGridViewDetailsSelector.Rows[e.RowIndex]);
+                    if (dataGridViewDetailsSelector.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell != null)
+                    {
+                        dataGridViewDetailsSelector.Rows.Remove(dataGridViewDetailsSelector.Rows[e.RowIndex]);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }
